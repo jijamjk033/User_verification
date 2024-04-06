@@ -1,0 +1,59 @@
+
+  .home-container {
+    position: relative; /* Ensure proper stacking order */
+}
+
+  .background-image {
+    background-image: url('./assets/images/reff/');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+}
+.header {
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+  
+  .card {
+    max-width: 500px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  
+  body {
+    background-color: #ebf0f3; /* Light gray background */
+  }
+  
+  .bg-image {
+    background-image: url('./assets/images/reff/360_F_252462576_koy7njo9iYx6gUcM26IZcDUs9fMKIKJs.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  .form-control {
+    margin-bottom: 0px;
+  }
+  
+  .btn-primary {
+    background-color: #007bff; /* Blue */
+    border-color: #007bff;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .text-danger {
+    color: #dc3545; /* Red */
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  

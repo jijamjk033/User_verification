@@ -1,0 +1,311 @@
+<%- include('../layouts/header.ejs') %>
+    <main class="main ">
+        <section class="pt-80 pb-100">
+            <div class="container align-items-center mt-4">
+                <div class="card">
+                    <section class="content-body p-xl-4 ms-2">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <form action="/profile" enctype="multipart/form-data" method="post"
+                                    onsubmit="return validationChecking()">
+                                    <div class="row">
+
+                                        <div class="row gx-3">
+                                            <input type="hidden" name="user_id" value="<%=userData._id%>">
+                                            <div class="col-12  mb-3">
+                                                <label class="form-label">Name</label>
+                                                <input class="form-control" name="name" value="<%=userData.name%>"
+                                                    id="user_name" type="text" placeholder="Type here">
+                                                <div id="errorName" class="ms-2 text-danger"></div>
+                                            </div>
+
+                                            <div class="col-lg-12  mb-3">
+                                                <label class="form-label">Email</label>
+                                                <input class="form-control" type="email" name="email"
+                                                    value="<%=userData.email%>" id="user_email"
+                                                    placeholder="example@mail.com" disabled>
+                                                <div id="errorMail" class="ms-2 text-danger"></div>
+                                            </div>
+                                            <div class="col-lg-12  mb-3">
+                                                <label class="form-label">Phone</label>
+                                                <input class="form-control" type="tel" name="mobile"
+                                                    value="<%=userData.mobile%>" id="user_phone"
+                                                    placeholder="+1234567890">
+                                                <div id="errorMobile" class="ms-2 text-danger"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <% if (userData.is_private) { %>
+                                        <a onclick="togglePrivacy('<%= userData._id %>', 'public')"
+                                            class="btn btn-sm font-sm rounded btn-warning">
+                                            <i class="material-icons md-edit"></i> Make Public
+                                        </a>
+                                        <% } else { %>
+                                            <a onclick="togglePrivacy('<%= userData._id %>', 'private')"
+                                                class="btn btn-sm font-sm rounded btn-info">
+                                                <i class="material-icons md-edit"></i> Make Private
+                                            </a>
+                                            <% } %>
+
+                                                <button class="btn btn-primary" type="submit">Save changes</button>
+                                </form>
+                            </div>
+                            <div class="col-lg-4">
+                                <!-- HTML Markup -->
+                                <div class="card-body">
+                                    <div class="input-upload">
+                                        <div
+                                            style="display: flex; margin-bottom: 20px; justify-content: center; align-items: center;">
+                                            <img id="profilePreviewImage" src="/default-profile-image.jpg"
+                                                alt="Profile Image" style="width: 100px; height: 100px;">
+                                        </div>
+                                        <input class="form-control" type="file" name="profile_image" id="profile_image"
+                                            onchange="validateProfileImage(this)">
+                                        <div class="error-message" style="color: red;" id="profile_image-error"></div>
+                                    </div>
+                                    <button type="button" id="saveProfileImage"
+                                        class="btn btn-primary mt-2 ms-4">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="container mb-4">
+                        <div class="row">
+                            <div class="col-lg-10 m-auto">
+                                <div class="d-flex justify-content-end">
+                                    <form action="/logout" method="post">
+                                        <button type="submit" class="btn btn-danger">Logout</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
+    <script>
+        // JavaScript
+        document.getElementById('profile_image').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']; // Add more if needed
+
+            if (file && validImageTypes.includes(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profilePreviewImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                event.target.value = ""; // Reset the input value to clear the invalid file
+                alert('Please select a valid image file (JPEG, PNG, GIF, BMP)');
+            }
+        });
+
+        // Function to validate profile image
+        function validateProfileImage(input) {
+            const file = input.files[0];
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']; // Add more if needed
+
+            if (file && !validImageTypes.includes(file.type)) {
+                input.value = ""; // Reset the input value to clear the invalid file
+                alert('Please select a valid image file (JPEG, PNG, GIF, BMP)');
+            }
+        }
+
+        // Save profile image
+        document.getElementById('saveProfileImage').addEventListener('click', function () {
+            const fileInput = document.getElementById('profile_image');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select an image to upload');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('profile_image', file);
+
+            // Submit the form data to the server using Fetch API or XMLHttpRequest
+            fetch('/uploadProfileImage', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Profile image uploaded successfully!');
+                        // Optionally, perform any additional actions upon successful upload
+                    } else {
+                        console.error('Failed to upload profile image.');
+                        // Optionally, handle failed upload
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading profile image:', error);
+                });
+        });
+
+    </script>
+    <script>
+
+        // Image preview
+        document.getElementById('fileUpload').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('previewImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const user_name = document.getElementById("user_name");
+            const errorName = document.getElementById("errorName");
+            const user_phone = document.getElementById("user_phone");
+            const errorMobile = document.getElementById("errorMobile");
+            const fileUpload = document.getElementById("fileUpload");
+            const errorfileUpload = document.getElementById("errorfileUpload");
+            const password = document.getElementById("password");
+            const errorpassword = document.getElementById("errorpassword");
+            const cpassword = document.getElementById("cpassword");
+            const errorcpassword = document.getElementById("errorcpassword");
+
+
+            user_name.addEventListener('input', function () {
+                errorName.innerHTML = user_name.value.trim() === "" ? "Please enter user name" : /^[a-zA-Z ]+$/.test(user_name.value) == false ? "Please enter alphabets only" : "";
+            });
+
+            user_phone.addEventListener('input', function () {
+                errorMobile.innerHTML = user_phone.value.trim() === "" ? "Please enter user phone number" : /^\d{10}$/.test(user_phone.value) == false ? "Please enter valid phone number" : "";
+            });
+
+            password.addEventListener('input', function () {
+                errorpassword.innerHTML = password.value.trim() === "" ? "Please enter password" : password.value.length < 8 ? "Please enter a minimum of 8 characters" : "";
+            });
+            cpassword.addEventListener('input', function () {
+                errorcpassword.innerHTML = cpassword.value.trim() === "" ? "Please enter password" : (cpassword.value !== password.value) ? "Passwords do not match" : "";
+            });
+
+
+        });
+        function validationChecking(event) {
+            const user_name = document.getElementById("user_name");
+            const errorName = document.getElementById("errorName");
+            const user_phone = document.getElementById("user_phone");
+            const errorMobile = document.getElementById("errorMobile");
+            const fileUpload = document.getElementById("fileUpload");
+            const errorfileUpload = document.getElementById("errorfileUpload");
+
+            errorName.innerHTML =
+                user_name.value.trim() === ""
+                    ? "Please enter user name"
+                    : /^[a-zA-Z ]+$/.test(user_name.value) == false
+                        ? "Please enter alphabets only"
+                        : "";
+            errorMobile.innerHTML =
+                user_phone.value.trim() === ""
+                    ? "Please enter user phone number"
+                    : /^\d{10}$/.test(user_phone.value) == false
+                        ? "Please enter valid phone number"
+                        : "";
+
+            const uploadedFile = fileUpload.files[0];
+            const existingImage = document.getElementById("previewImage");
+            const defaultImageSrc = existingImage.getAttribute("src");
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/gif",
+                "image/bmp",
+                "image/webp",
+
+            ];
+
+            if (uploadedFile) {
+                if (!allowedTypes.includes(uploadedFile.type)) {
+                    errorfileUpload.innerHTML = "Please upload a valid image file (JPEG, PNG, GIF)";
+
+                    return false;
+                }
+            } else {
+                // If no new file is selected, maintain the existing image
+                existingImage.setAttribute("src", defaultImageSrc);
+            }
+
+            if (errorName.innerHTML || errorMobile.innerHTML) return false;
+
+            return true;
+        }
+
+        function validationPasswordChecking(event) {
+            const password = document.getElementById("password");
+            const errorpassword = document.getElementById("errorpassword");
+            const cpassword = document.getElementById("cpassword");
+            const errorcpassword = document.getElementById("errorcpassword");
+            errorpassword.innerHTML = password.value.trim() === "" ? "Please enter password" : password.value.length < 8 ? "Please enter a minimum of 8 characters" : "";
+            errorcpassword.innerHTML = cpassword.value.trim() === "" ? "Please enter password" : (cpassword.value !== password.value) ? "Passwords do not match" : "";
+
+            if (errorpassword.innerHTML || errorcpassword.innerHTML) return false;
+
+            return true;
+        }
+        function togglePrivacy(userId, action) {
+            let titleText, confirmText, successText, buttonText;
+
+            if (action === 'private') {
+                titleText = "Are you sure?";
+                confirmText = "Please confirm to make this user's profile private!";
+                successText = "User's profile has been made private";
+                buttonText = "Yes, make private";
+            } else if (action === 'public') {
+                titleText = "Are you sure?";
+                confirmText = "Please confirm to make this user's profile public!";
+                successText = "User's profile has been made public";
+                buttonText = "Yes, make public";
+            }
+
+            Swal.fire({
+                title: titleText,
+                text: confirmText,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: buttonText,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/togglePrivacy?id=${userId}`, {
+                        method: 'GET',
+                    }).then(response => {
+                        if (response.ok) {
+                            Swal.fire({
+                                title: "Success",
+                                text: successText,
+                                icon: "success",
+                                timer: 2000,
+                                timeProgressBar: true,
+                                showConfirmButton: false,
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", "Failed to perform the action", "error");
+                        }
+                    }).catch(error => {
+                        Swal.fire("Error!", "Failed to perform the action", "error");
+                    });
+                }
+            });
+        }
+
+
+    </script>
+
+
+    <%- include('../layouts/footer.ejs') %>

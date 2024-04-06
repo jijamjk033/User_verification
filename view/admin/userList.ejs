@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Registration</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="icon" href="./assets/images/reff/logo-social.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous" />
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+    <header class="header-area header-style-1 header-height-2">
+        <div class="header-top header-top-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="d-flex justify-content-end pt-3">
+                        <div class="header-info d-flex align-items-start">
+                            <ul class="d-flex">
+                                <li class="fs-6 text-dark list-unstyled"><a class="text-decoration-none fw-bold text-dark"
+                                        href="/admin/adminLogout">Logout</a>
+                                </li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <div class="p-0 d-flex justify-content-center container-fluid mb-4">
+                    <h1 class="mt-4 mb-3">Users List</h1>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Table
+                    </div>
+                    <div class="card-body">
+                        <table id="datatablesSimple" class="table text-center">
+                            <thead>
+                                <tr>
+                                    <!-- <th scope="col"></th> -->
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Phone Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (userData.length> 0) {
+                                    userData.forEach(user => {
+                                    %>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="ms-3">
+                                                    <p class="mb-1">
+                                                        <%= user.name %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>
+                                                <%= user.email %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span>
+                                                <%= user.mobile %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <% }); } else { %>
+                                        <tr>
+                                            <td colspan="6">
+                                                <p>User not found</p>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const searchInput = document.getElementById("searchInput");
+                const table = document.getElementById("products");
+                const rows = table.getElementsByTagName("tr");
+
+                searchInput.addEventListener("keyup", function () {
+                    const searchText = searchInput.value.toLowerCase();
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const rowData = rows[i].textContent.toLowerCase();
+                        if (rowData.includes(searchText)) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <%- include('../layouts/footer.ejs') %>
